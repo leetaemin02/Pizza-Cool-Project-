@@ -10,10 +10,8 @@ import {
   ArrowLeft,
   CreditCard,
 } from "lucide-react";
-
-// --- IMPORT HÌNH NỀN ---
 import pizzaBgImage from "../images/cart.jpg";
-// -----------------------
+
 
 // Hàm định dạng tiền tệ
 const formatCurrency = (price) => {
@@ -33,7 +31,6 @@ export default function CartPage() {
 
   useEffect(() => {
     fetchCart();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleQtyChange = async (item, delta) => {

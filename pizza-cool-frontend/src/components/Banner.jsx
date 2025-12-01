@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const images = [
   "https://res.cloudinary.com/dj4qfnabu/image/upload/v1760701324/pizzacool/gdtepyvjhenxiykmv0ss.jpg",
@@ -15,7 +16,7 @@ export default function Banner() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % images.length);
-    }, 2000);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -32,44 +33,53 @@ export default function Banner() {
   };
 
   return (
-    <div className="relative w-full h-96 md:h-[500px] lg:h-[550px] overflow-hidden shadow-lg bg-gradient-to-r from-red-600 to-orange-500 flex items-center justify-center">
+    // --- THAY ĐỔI Ở ĐÂY: Thêm 'mt-16' hoặc 'mt-20' ---
+    // mt-16: Đẩy xuống khoảng 64px (bằng chiều cao Header)
+    // mt-20: Đẩy xuống khoảng 80px (tạo một khoảng hở nhỏ)
+    <div className="mt-16 relative w-full h-96 md:h-[500px] lg:h-[550px] overflow-hidden shadow-lg bg-gray-900 flex items-center justify-center group">
       {/* Slides */}
       {images.map((img, index) => (
-        <img
+        <Link
+          to="/promo"
           key={index}
-          src={img}
-          alt={`slide-${index}`}
-          // Sử dụng object-cover để ảnh lấp đầy khung hình
-          className={`absolute w-full h-full object-cover transition-opacity duration-700 ${
-            index === current ? "opacity-100" : "opacity-0"
+          className={`absolute w-full h-full transition-opacity duration-700 ${
+            index === current
+              ? "opacity-100 z-10 pointer-events-auto"
+              : "opacity-0 z-0 pointer-events-none"
           }`}
-        />
+        >
+          <img
+            src={img}
+            alt={`slide-${index}`}
+            className="w-full h-full object-cover cursor-pointer"
+          />
+        </Link>
       ))}
 
-      {/* Navigation Arrows (Mũi tên điều hướng) */}
+      {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
         aria-label="Previous slide"
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white w-12 h-12 flex items-center justify-center rounded-full transition focus:outline-none"
+        className="absolute z-20 left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white w-12 h-12 flex items-center justify-center rounded-full transition focus:outline-none backdrop-blur-sm"
       >
         &#10094;
       </button>
       <button
         onClick={nextSlide}
         aria-label="Next slide"
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white w-12 h-12 flex items-center justify-center rounded-full transition focus:outline-none"
+        className="absolute z-20 right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white w-12 h-12 flex items-center justify-center rounded-full transition focus:outline-none backdrop-blur-sm"
       >
         &#10095;
       </button>
 
-      {/* Indicators (Chấm chỉ mục) */}
-      <div className="absolute bottom-4 flex space-x-2">
+      {/* Indicators */}
+      <div className="absolute z-20 bottom-4 flex space-x-2">
         {images.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
             aria-label={`Go to slide ${index + 1}`}
-            className={`h-2 rounded-full transition-all duration-300 ${
+            className={`h-2 rounded-full transition-all duration-300 shadow-sm ${
               index === current
                 ? "bg-red-600 w-8"
                 : "bg-white/70 w-3 hover:bg-white"

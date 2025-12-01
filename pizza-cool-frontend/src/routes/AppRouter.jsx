@@ -11,6 +11,7 @@ import CheckoutPage from "../pages/Checkout";
 import ThanhToanPage from "../pages/ThanhToanPage";
 import OrderHistoryPage from "../pages/OrderHistoryPage";
 import OrderDetailPage from "../pages/OrderDetailPage";
+import About from "../pages/About";
 
 import PrivateRoute from "../components/PrivateRoute";
 import AdminLayout from "../layouts/AdminLayout";
@@ -34,6 +35,7 @@ function AppRouter() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
+          <Route path="/about" element={<About />} />
 
           <Route
             path="/profile"

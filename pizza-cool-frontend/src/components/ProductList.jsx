@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import axios from "axios";
-import { Link } from "react-router-dom"; // Đảm bảo đã import Link
+import { Link } from "react-router-dom";
+
+// --- IMPORT HÌNH NỀN ---
+import pizzaBgImage from "../images/menu.jpg";
+// -----------------------
 
 // --- Cấu hình API Backend ---
-// Định nghĩa các loại sản phẩm, KHỚP VỚI GIÁ TRỊ ENUM trong Schema Mongoose
 const API_BASE_URL = "http://localhost:5000/api/sanpham";
 const productTypes = [
   { key: "pizza", label: "Pizza" },
@@ -23,10 +26,7 @@ function ProductList() {
     try {
       setLoading(true);
       setError(null);
-
-      // URL đã được sửa lại cho đúng với backend
       const apiUrl = `${API_BASE_URL}?loai=${tab}`;
-
       const response = await axios.get(apiUrl);
       setSanPhams(response.data);
     } catch (err) {
@@ -45,56 +45,56 @@ function ProductList() {
     fetchProducts(activeTab);
   }, [activeTab]);
 
+  // --- Giao diện Tải dữ liệu / Lỗi (Glassmorphism) ---
   if (loading) {
     return (
-      <div className="flex flex-col justify-center items-center h-64 bg-gray-50 py-10">
-        <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-red-600"></div>
-        <p className="mt-4 text-lg text-gray-600">Đang tải menu...</p>
+      <div
+        className="flex flex-col justify-center items-center h-screen bg-cover bg-center bg-fixed"
+        style={{ backgroundImage: `url(${pizzaBgImage})` }}
+      >
+        <div className="bg-white/60 backdrop-blur-md p-8 rounded-2xl shadow-lg flex flex-col items-center border border-white/50">
+          <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-red-600"></div>
+          <p className="mt-4 text-lg font-bold text-gray-800">
+            Đang tải menu...
+          </p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-10 px-4 text-red-600 bg-red-50 rounded-md">
-        {error}
+      <div
+        className="flex flex-col justify-center items-center h-screen bg-cover bg-center bg-fixed"
+        style={{ backgroundImage: `url(${pizzaBgImage})` }}
+      >
+        <div className="text-center py-10 px-6 text-red-700 bg-red-100/90 backdrop-blur-md rounded-2xl border border-red-200 shadow-xl max-w-md font-bold">
+          {error}
+        </div>
       </div>
     );
   }
 
-  // --- Giao diện Tải dữ liệu / Lỗi ---
-  if (loading) {
-    return (
-      <div className="flex flex-col justify-center items-center h-64 bg-gray-50 py-10">
-        <div className="w-16 h-16 border-4 border-dashed rounded-full animate-spin border-red-600"></div>
-        <p className="mt-4 text-lg text-gray-600">Đang tải menu...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-10 px-4 text-red-600 bg-red-50 rounded-md">
-        {error}
-      </div>
-    );
-  }
-
-  // --- Giao diện Chính ---
+  // --- Giao diện Chính (Glassmorphism) ---
   return (
-    <div className="bg-gray-50 py-10">
-      <div className="container mx-auto px-4">
+    // --- Wrapper chứa hình nền Pizza ---
+    <div
+      className="min-h-screen w-full bg-cover bg-center bg-fixed py-12"
+      style={{ backgroundImage: `url(${pizzaBgImage})` }}
+    >
+      {/* --- Container Trong Suốt --- */}
+      <div className="container mx-auto px-4 bg-transparent">
         {/* Thanh Tabs */}
-        <div className="flex justify-start border-b border-gray-200 mb-8">
+        <div className="flex justify-center border-b border-white/40 mb-10 backdrop-blur-sm bg-white/20 p-2 rounded-2xl shadow-sm">
           {productTypes.map((type) => (
             <button
               key={type.key}
               onClick={() => setActiveTab(type.key)}
-              className={`py-3 px-6 text-lg font-semibold ${
+              className={`py-3 px-6 text-lg font-bold transition-all duration-300 rounded-xl ${
                 activeTab === type.key
-                  ? "text-red-600 border-b-2 border-red-600"
-                  : "text-gray-600 hover:text-red-600"
-              } focus:outline-none transition-colors duration-200`}
+                  ? "bg-white/90 text-red-600 shadow-md"
+                  : "text-white hover:text-red-600 hover:bg-white/40"
+              } focus:outline-none`}
             >
               {type.label}
             </button>
@@ -112,23 +112,26 @@ function ProductList() {
                 moTa={sp.moTa}
                 gia={sp.gia}
                 hinhAnh={sp.hinhAnh}
-                // Bạn có thể cần truyền thêm trường 'loai' hoặc 'kichThuoc'
-                // vào ProductCard nếu cần hiển thị chi tiết
                 loai={sp.loai}
+                // Thêm class để làm trong suốt thẻ Card nếu cần
+                // className="bg-white/70 backdrop-blur-md border border-white/50 ..."
               />
             ))
           ) : (
-            <div className="col-span-full text-center text-gray-500 text-lg py-10">
-              Không có sản phẩm nào để hiển thị trong mục này.
+            <div className="col-span-full text-center py-16 bg-white/30 backdrop-blur-md rounded-3xl border border-white/40 shadow-lg">
+              <p className="text-xl font-bold text-white drop-shadow-md">
+                Không có sản phẩm nào để hiển thị trong mục này.
+              </p>
+              <p className="text-white/80 mt-2">Hãy thử chọn mục khác nhé!</p>
             </div>
           )}
         </div>
 
-        {/* Nút Xem Thêm (Chuyển hướng sang trang Menu) */}
+        {/* Nút Xem Thêm */}
         <div className="text-center mt-12">
           <Link
             to="/menu"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors duration-300 shadow-md"
+            className="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-8 rounded-xl text-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02] active:scale-95 border border-white/20"
           >
             Xem Thêm
           </Link>

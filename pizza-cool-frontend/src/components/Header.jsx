@@ -7,19 +7,38 @@ import logoImage from "../assets/logo.png";
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+
+  // State ẩn hiện và cuộn
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
+
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
 
-  // Hiệu ứng: Khi cuộn xuống thì header sẽ đậm hơn và THU NHỎ lại
+  // --- Xử lý sự kiện cuộn (Logic cũ) ---
   useEffect(() => {
     const handleScroll = () => {
-      // Khi cuộn quá 20px thì bật trạng thái scrolled
-      setScrolled(window.scrollY > 20);
+      const currentScrollY = window.scrollY;
+
+      // Đổi màu nền khi không ở đỉnh trang
+      setIsScrolled(currentScrollY > 10);
+
+      // Logic ẩn/hiện Header (Smart Navbar)
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsVisible(false); // Cuộn xuống -> Ẩn
+        setIsMenuOpen(false);
+        setIsDropdownOpen(false);
+      } else {
+        setIsVisible(true); // Cuộn lên -> Hiện
+      }
+
+      setLastScrollY(currentScrollY);
     };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   const handleLogout = () => {
     logout();
@@ -28,49 +47,54 @@ function Header() {
   };
 
   const linkClass = ({ isActive }) =>
-    `block md:inline-block px-3 py-2 rounded-lg text-sm font-bold transition-all duration-300 ${
+    `block md:inline-block px-3 py-1.5 rounded-lg text-sm font-bold transition-all duration-300 ${
       isActive
-        ? "bg-white text-red-600 shadow-md transform scale-105"
+        ? "bg-white text-red-600 shadow-sm transform scale-105"
         : "text-white hover:bg-white/20 hover:text-white hover:shadow-inner"
     }`;
 
-  // Class cho phần chào user
   const welcomeClass =
-    "flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-bold text-white cursor-pointer hover:bg-white/20 transition-all duration-300 border border-transparent hover:border-white/30";
+    "flex items-center space-x-2 px-3 py-1.5 rounded-lg text-sm font-bold text-white cursor-pointer hover:bg-white/20 transition-all duration-300 border border-transparent hover:border-white/30";
 
   return (
     <nav
-      className={`sticky top-0 z-50 transition-all duration-500 ease-in-out border-b border-white/20 shadow-xl
+      className={`fixed w-full top-0 z-50 transition-all duration-500 ease-in-out border-b border-white/20 shadow-lg
       ${
-        scrolled
-          ? "bg-gradient-to-r from-red-700/95 to-orange-600/95 backdrop-blur-xl py-0" // Thu gọn padding khi cuộn
-          : "bg-gradient-to-r from-red-600/85 to-orange-500/85 backdrop-blur-md py-2" // Padding rộng khi ở đỉnh
+        // Ẩn/Hiện
+        isVisible ? "translate-y-0" : "-translate-y-full"
+      }
+      ${
+        // Màu nền: Khi cuộn thì padding=0, chưa cuộn thì padding=1 (nhỏ hơn cũ)
+        isScrolled
+          ? "bg-gradient-to-r from-red-700/95 to-orange-600/95 backdrop-blur-xl py-0"
+          : "bg-gradient-to-r from-red-600/85 to-orange-500/85 backdrop-blur-md py-1"
       }`}
     >
       <div className="container mx-auto px-4">
-        {/* Thay đổi chiều cao (h-20 xuống h-16) khi scrolled 
-            transition-all duration-500: giúp hiệu ứng co giãn mượt mà
+        {/* --- CHIỀU CAO HEADER (Đã chỉnh nhỏ lại) ---
+            - Bình thường (chưa cuộn): h-16 (64px) -> Thay vì h-20 cũ
+            - Khi cuộn (isScrolled): h-12 (48px) -> Thay vì h-14 cũ
         */}
         <div
           className={`flex justify-between items-center transition-all duration-500 ease-in-out ${
-            scrolled ? "h-14" : "h-20"
+            isScrolled ? "h-10" : "h-12"
           }`}
         >
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 flex-shrink-0 group">
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0 group">
             <img
               src={logoImage}
               alt="PizzaCool Logo"
-              // Logo thu nhỏ từ h-16 xuống h-10 khi cuộn
+              // Logo nhỏ hơn: h-10 (40px) xuống h-8 (32px)
               className={`w-auto object-contain drop-shadow-lg transition-all duration-500 ease-in-out group-hover:scale-110 ${
-                scrolled ? "h-10" : "h-16"
+                isScrolled ? "h-8" : "h-10"
               }`}
             />
             <div className="hidden sm:flex flex-col">
               <span
-                // Chữ cũng thu nhỏ nhẹ
+                // Chữ nhỏ hơn: text-2xl xuống text-xl
                 className={`ml-auto font-extrabold text-white drop-shadow-md tracking-wide transition-all duration-500 ${
-                  scrolled ? "text-xl" : "text-3xl"
+                  isScrolled ? "text-lg" : "text-2xl"
                 }`}
               >
                 Pizza Cool
@@ -79,7 +103,7 @@ function Header() {
           </Link>
 
           {/* Menu Desktop */}
-          <div className="hidden md:flex md:items-center md:space-x-2">
+          <div className="hidden md:flex md:items-center md:space-x-1">
             <NavLink to="/" className={linkClass}>
               Trang chủ
             </NavLink>
@@ -87,7 +111,7 @@ function Header() {
               Menu
             </NavLink>
             <NavLink to="/promo" className={linkClass}>
-              <FaGift className="inline text-lg mb-1 mr-1" /> Ưu đãi
+              <FaGift className="inline text-base mb-0.5 mr-1" /> Ưu đãi
             </NavLink>
             <NavLink to="/cart" className={linkClass}>
               Giỏ hàng
@@ -101,30 +125,25 @@ function Header() {
                   </NavLink>
                 )}
 
-                {/* Dropdown User Wrapper 
-                   - Thêm onMouseEnter và onMouseLeave vào thẻ div bao ngoài này 
-                   - Xóa onClick ở thẻ con
-                */}
+                {/* Dropdown User Wrapper */}
                 <div
-                  className="relative ml-2 h-full flex items-center"
+                  className="relative ml-1 h-full flex items-center"
                   onMouseEnter={() => setIsDropdownOpen(true)}
                   onMouseLeave={() => setIsDropdownOpen(false)}
                 >
                   <div className={welcomeClass}>
-                    <FaUserCircle className="inline text-xl" />
+                    <FaUserCircle className="inline text-lg" />
                     <span>Chào, {user.hoTen.split(" ").pop()}!</span>
                     <FaChevronDown
-                      className={`text-xs transition-transform duration-300 ${
+                      className={`text-[10px] transition-transform duration-300 ${
                         isDropdownOpen ? "rotate-180" : ""
                       }`}
                     />
                   </div>
 
                   {isDropdownOpen && (
-                    <div className="absolute top-full right-0 w-60 pt-2 animate-fadeIn">
-                      {/* Thêm pt-2 để tạo cầu nối vô hình giữa nút và menu, tránh bị mất hover khi di chuột xuống */}
-                      <div className="bg-white/90 backdrop-blur-xl rounded-xl shadow-2xl py-2 overflow-hidden border border-white/50">
-                        {/* Header nhỏ trong dropdown */}
+                    <div className="absolute top-full right-0 w-56 pt-1 animate-fadeIn">
+                      <div className="bg-white/95 backdrop-blur-xl rounded-lg shadow-2xl py-1 overflow-hidden border border-white/50 text-sm">
                         <div className="px-4 py-2 border-b border-gray-200/50 mb-1">
                           <p className="text-xs text-gray-500 font-semibold">
                             Tài khoản
@@ -137,7 +156,7 @@ function Header() {
                         {user?.vaiTro === "quan_tri" && (
                           <Link
                             to="/admin/dashboard"
-                            className="block px-4 py-2.5 text-red-600 font-bold hover:bg-red-50 transition-colors"
+                            className="block px-4 py-2 text-red-600 font-bold hover:bg-red-50 transition-colors"
                             onClick={() => setIsDropdownOpen(false)}
                           >
                             ⚙️ Trang Quản Trị
@@ -146,14 +165,14 @@ function Header() {
 
                         <Link
                           to="/profile"
-                          className="block px-4 py-2.5 text-gray-700 font-medium hover:bg-gray-100 transition-colors"
+                          className="block px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 transition-colors"
                           onClick={() => setIsDropdownOpen(false)}
                         >
                           Thông tin cá nhân
                         </Link>
                         <Link
                           to="/orders-history"
-                          className="block px-4 py-2.5 text-gray-700 font-medium hover:bg-gray-100 transition-colors"
+                          className="block px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 transition-colors"
                           onClick={() => setIsDropdownOpen(false)}
                         >
                           Lịch sử mua hàng
@@ -164,7 +183,7 @@ function Header() {
                               setIsDropdownOpen(false);
                               handleLogout();
                             }}
-                            className="w-full text-left block px-4 py-3 text-red-600 font-bold hover:bg-red-50 transition-colors"
+                            className="w-full text-left block px-4 py-2 text-red-600 font-bold hover:bg-red-50 transition-colors"
                           >
                             Đăng xuất
                           </button>
@@ -181,7 +200,7 @@ function Header() {
                 </NavLink>
                 <NavLink
                   to="/register"
-                  className="bg-white text-red-600 px-4 py-2 rounded-lg text-sm font-bold shadow-lg hover:bg-gray-100 transition transform hover:-translate-y-0.5"
+                  className="bg-white text-red-600 px-3 py-1.5 rounded-lg text-sm font-bold shadow-md hover:bg-gray-100 transition transform hover:-translate-y-0.5"
                 >
                   Đăng Ký
                 </NavLink>
@@ -193,11 +212,11 @@ function Header() {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-lg text-white hover:bg-white/20 focus:outline-none transition"
+              className="p-1.5 rounded-lg text-white hover:bg-white/20 focus:outline-none transition"
             >
               {!isMenuOpen ? (
                 <svg
-                  className="block h-7 w-7 drop-shadow-md"
+                  className="block h-6 w-6 drop-shadow-md"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -212,7 +231,7 @@ function Header() {
                 </svg>
               ) : (
                 <svg
-                  className="block h-7 w-7 drop-shadow-md"
+                  className="block h-6 w-6 drop-shadow-md"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -231,15 +250,13 @@ function Header() {
         </div>
       </div>
 
-      {/* Menu Mobile - Dạng Glass */}
+      {/* Menu Mobile */}
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
           isMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
         } bg-gradient-to-b from-red-700/95 to-orange-600/95 backdrop-blur-xl border-t border-white/10`}
       >
-        {/* Nội dung Mobile giữ nguyên */}
-        <div className="px-4 pt-2 pb-6 space-y-2">
-          {/* ... (Giữ nguyên code phần mobile như cũ) ... */}
+        <div className="px-4 pt-2 pb-6 space-y-1">
           <NavLink
             to="/"
             className={linkClass}
@@ -259,7 +276,7 @@ function Header() {
             className={linkClass}
             onClick={() => setIsMenuOpen(false)}
           >
-            <FaGift className="inline text-lg mr-2" /> Ưu đãi
+            <FaGift className="inline text-base mr-2" /> Ưu đãi
           </NavLink>
           <NavLink
             to="/cart"
@@ -270,7 +287,7 @@ function Header() {
           </NavLink>
 
           {isAuthenticated ? (
-            <div className="mt-4 pt-4 border-t border-white/20">
+            <div className="mt-3 pt-3 border-t border-white/20">
               {user?.vaiTro === "quan_tri" && (
                 <NavLink
                   to="/admin/dashboard"
@@ -280,43 +297,43 @@ function Header() {
                   QUẢN LÝ (Admin)
                 </NavLink>
               )}
-              <div className="flex items-center px-3 py-3 text-white font-bold text-lg">
-                <FaUserCircle className="inline text-2xl mr-2" />
+              <div className="flex items-center px-3 py-2 text-white font-bold text-base">
+                <FaUserCircle className="inline text-xl mr-2" />
                 {user.hoTen}
               </div>
               <Link
                 to="/profile"
                 onClick={() => setIsMenuOpen(false)}
-                className="block px-3 py-2 text-white/90 hover:bg-white/20 rounded-lg ml-2"
+                className="block px-3 py-2 text-white/90 hover:bg-white/20 rounded-lg ml-2 text-sm"
               >
                 Thông tin tài khoản
               </Link>
               <Link
                 to="/orders-history"
                 onClick={() => setIsMenuOpen(false)}
-                className="block px-3 py-2 text-white/90 hover:bg-white/20 rounded-lg ml-2"
+                className="block px-3 py-2 text-white/90 hover:bg-white/20 rounded-lg ml-2 text-sm"
               >
                 Lịch sử mua hàng
               </Link>
               <button
                 onClick={handleLogout}
-                className="block w-full text-left px-3 py-2 text-red-200 hover:text-white hover:bg-red-500/50 rounded-lg font-bold ml-2 mt-2 transition"
+                className="block w-full text-left px-3 py-2 text-red-200 hover:text-white hover:bg-red-500/50 rounded-lg font-bold ml-2 mt-1 transition text-sm"
               >
                 Đăng Xuất
               </button>
             </div>
           ) : (
-            <div className="mt-4 pt-4 border-t border-white/20 grid grid-cols-2 gap-4">
+            <div className="mt-3 pt-3 border-t border-white/20 grid grid-cols-2 gap-3">
               <NavLink
                 to="/login"
-                className="text-center block px-3 py-2 text-white hover:bg-white/20 rounded-lg font-bold border border-white/30"
+                className="text-center block px-3 py-2 text-white hover:bg-white/20 rounded-lg font-bold border border-white/30 text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Đăng Nhập
               </NavLink>
               <NavLink
                 to="/register"
-                className="text-center block px-3 py-2 bg-white text-red-600 rounded-lg font-bold shadow-md"
+                className="text-center block px-3 py-2 bg-white text-red-600 rounded-lg font-bold shadow-md text-sm"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Đăng Ký
