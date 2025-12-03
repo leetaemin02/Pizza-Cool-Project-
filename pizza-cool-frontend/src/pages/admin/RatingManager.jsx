@@ -41,9 +41,7 @@ const RatingManager = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:5000/api/admin/danhgia/${
-          editing._1d || editing._id
-        }/phanhoi`,
+        `http://localhost:5000/api/admin/danhgia/${editing._id}/phanhoi`,
         { phanHoi: replyText },
         { headers: { Authorization: `Bearer ${token}` } }
       );

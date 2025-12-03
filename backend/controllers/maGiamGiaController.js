@@ -37,6 +37,7 @@ exports.create = async (req, res) => {
       Mota,
       dieuKienToiThieu,
       soLuotSuDung,
+      soLuotDaSuDung,
       chiTietDieuKien,
     } = req.body;
 
@@ -56,7 +57,8 @@ exports.create = async (req, res) => {
       Mota,
       dieuKienToiThieu: dieuKienToiThieu || 0,
       soLuotSuDung: soLuotSuDung !== undefined ? soLuotSuDung : -1,
-      chiTietDieuKien,
+      soLuotDaSuDung: soLuotDaSuDung || 0,
+      chiTietDieuKien: chiTietDieuKien || "",
     });
 
     res.status(201).json(mg);
@@ -79,6 +81,7 @@ exports.update = async (req, res) => {
       Mota,
       dieuKienToiThieu,
       soLuotSuDung,
+      soLuotDaSuDung,
       chiTietDieuKien,
     } = req.body;
 
@@ -94,6 +97,7 @@ exports.update = async (req, res) => {
         Mota,
         dieuKienToiThieu,
         soLuotSuDung,
+        soLuotDaSuDung,
         chiTietDieuKien,
       },
       { new: true }

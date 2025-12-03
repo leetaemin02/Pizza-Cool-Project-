@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ProductCard from "../components/ProductCard";
+import { useCart } from "../context/CartContext";
+import { toast } from "react-hot-toast";
 import { Search, Filter, ArrowUpDown, Loader, Menu } from "lucide-react";
 import pizzaBgImage from "../images/menu.jpg";
 const API_URL = "http://localhost:5000/api/sanpham";
@@ -13,6 +15,8 @@ function TrangSanPham() {
   const [loaiFilter, setLoaiFilter] = useState("tatca");
   const [sortOrder, setSortOrder] = useState("none");
   const [searchTerm, setSearchTerm] = useState("");
+  const { addToCart, fetchCart } = useCart();
+  const [addingId, setAddingId] = useState(null);
 
   useEffect(() => {
     fetchSanPhams();
@@ -71,15 +75,12 @@ function TrangSanPham() {
       className="min-h-screen w-full bg-cover bg-center bg-fixed pt-28 pb-10 px-4"
       style={{ backgroundImage: `url(${pizzaBgImage})` }}
     >
-      
       <div className="container mx-auto bg-transparent">
-        
         <h1 className="text-4xl md:text-5xl font-extrabold text-center text-white mb-10 drop-shadow-[0_3px_3px_rgba(0,0,0,0.9)] flex items-center justify-center gap-3 uppercase tracking-wide">
           <Menu size={40} className="text-white drop-shadow-md" /> Menu
           PizzaCool
         </h1>
 
-        
         <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-10 bg-white/30 backdrop-blur-lg p-6 rounded-3xl border border-white/40 shadow-2xl">
           {/* Ô tìm kiếm */}
           <div className="relative w-full md:w-1/3 group">
@@ -112,7 +113,6 @@ function TrangSanPham() {
                 <option value="pizza">Pizza</option>
                 <option value="ga">Gà rán</option>
                 <option value="my">Mỳ Ý</option>
-               
               </select>
             </div>
 
@@ -163,10 +163,39 @@ function TrangSanPham() {
                 badge={sp.khuyenMai ? `-${sp.khuyenMai}%` : null}
                 actions={
                   <button
-                    className="w-full mt-2 bg-gradient-to-r from-red-600 to-orange-500 text-white py-2.5 rounded-xl font-bold hover:from-red-700 hover:to-orange-600 transition-all shadow-md hover:shadow-lg transform active:scale-95"
-                    onClick={() => alert(`Đã thêm ${sp.ten} vào giỏ hàng!`)}
+                    onClick={async (e) => {
+                      e.stopPropagation();
+
+                      if (addingId) return;
+                      setAddingId(sp._id);
+                      try {
+                        await addToCart(
+                          {
+                            _id: sp._id,
+                            ten: sp.ten,
+                            moTa: sp.moTa,
+                            gia: sp.gia,
+                            hinhAnh: sp.hinhAnh,
+                          },
+                          1
+                        );
+                        await fetchCart();
+                        toast.success(`✅ Đã thêm "${sp.ten}" vào giỏ hàng`);
+                      } catch (err) {
+                        console.error(err);
+                        toast.error("❌ Thêm giỏ hàng thất bại!");
+                      } finally {
+                        setAddingId(null);
+                      }
+                    }}
+                    disabled={addingId === sp._id}
+                    className={`w-full bg-red-600 text-white py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors ${
+                      addingId === sp._id
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-red-600 text-white hover:bg-red-700"
+                    }`}
                   >
-                    Thêm vào giỏ
+                    {addingId === sp._id ? "Đang thêm..." : "Thêm vào giỏ"}
                   </button>
                 }
               />

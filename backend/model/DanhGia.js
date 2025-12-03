@@ -14,6 +14,8 @@ const danhGiaSchema = new mongoose.Schema(
     },
     diemDanhGia: { type: Number, min: 1, max: 5 },
     nhanXet: String,
+    phanHoi: String, // Phản hồi từ admin
+    phanHoiAt: Date, // Thời gian phản hồi
   },
   { timestamps: true }
 );

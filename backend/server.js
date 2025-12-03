@@ -13,6 +13,7 @@ const nguoiDungRoutes = require("./routes/nguoiDungRoutes");
 const sanPhamRoutes = require("./routes/sanPhamRoutes");
 const gioHangRoutes = require("./routes/gioHangRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 
 // Import model để seed admin
 const NguoiDung = require("./model/NguoiDung");
@@ -36,6 +37,8 @@ app.use("/api/sanpham", sanPhamRoutes);
 app.use("/api/giohang", gioHangRoutes);
 app.use("/api/donhang", donHangRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/ai", aiRoutes);
+
 
 // ------------------- ROUTE TEST -------------------
 app.get("/", (req, res) => {
@@ -74,5 +77,6 @@ const startServer = async () => {
     console.error("❌ Lỗi khởi động server:", err);
   }
 };
+
 
 startServer();

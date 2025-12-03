@@ -21,7 +21,6 @@ exports.getDashboard = async (req, res) => {
     // Lấy tổng doanh thu (CHỈ TÍNH ĐƠN ĐÃ HOÀN THÀNH)
     const revenueData = await DonHang.aggregate([
       {
-        
         $match: {
           trangThaiDonHang: "Đã hoàn thành",
         },

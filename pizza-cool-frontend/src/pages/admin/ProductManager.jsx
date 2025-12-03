@@ -10,6 +10,7 @@ const ProductManager = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("");
+  const [soLuongDaBan, setSoLuongDaBan] = useState({});
   const [formData, setFormData] = useState({
     ten: "",
     moTa: "",
@@ -27,6 +28,16 @@ const ProductManager = () => {
       setLoading(true);
       const { data } = await axios.get("http://localhost:5000/api/sanpham");
       setProducts(data);
+
+      // Lấy dữ liệu số lượng đã bán
+      try {
+        const { data: salesData } = await axios.get(
+          "http://localhost:5000/api/sanpham/sales/total"
+        );
+        setSoLuongDaBan(salesData);
+      } catch (err) {
+        console.error("Lỗi khi lấy dữ liệu bán hàng:", err);
+      }
     } catch (err) {
       toast.error("Lỗi khi lấy danh sách sản phẩm");
       console.error(err);
@@ -217,6 +228,9 @@ const ProductManager = () => {
                       Giá
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                      Hàng tồn kho
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
                       Đã Bán
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
@@ -267,6 +281,9 @@ const ProductManager = () => {
                       <td className="px-6 py-4 text-sm text-gray-700">
                         {product.sl || 0}
                       </td>
+                      <td className="px-6 py-4 text-sm font-medium text-green-700">
+                        {soLuongDaBan[product._id] || 0}
+                      </td>
                       <td className="px-4 py-2 text-sm">
                         {(() => {
                           // Determine status label and classes
@@ -276,21 +293,23 @@ const ProductManager = () => {
                           let classes =
                             "px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-500";
 
-                          // If stock is exactly 0 => Hết hàng (highest priority)
-                          if (Number(product.sl) === 0) {
-                            label = "Hết hàng";
-                            classes =
-                              "px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-500";
-                          } else if (Number(product.sl) > 15) {
-                            // If stock greater than 15 => Bán chạy
-                            label = "Bán chạy";
-                            classes =
-                              "px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-700";
-                          } else if (!product.trangThai) {
-                            // If explicitly turned off by admin
+                          const soldQuantity = soLuongDaBan[product._id] || 0;
+
+                          // If explicitly turned off by admin (highest priority)
+                          if (!product.trangThai) {
                             label = "Ngưng bán";
                             classes =
                               "px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600";
+                          } else if (Number(soldQuantity) > 15) {
+                            // If sold quantity greater than 15 => Bán chạy
+                            label = "Bán chạy";
+                            classes =
+                              "px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-700";
+                          } else if (product.trangThai) {
+                            // If product is active => Còn bán
+                            label = "Còn bán";
+                            classes =
+                              "px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-500";
                           }
 
                           return <span className={classes}>{label}</span>;
@@ -406,14 +425,14 @@ const ProductManager = () => {
                     {/* Số lượng */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Số lượng
+                        Tồn kho
                       </label>
                       <input
                         type="number"
                         name="sl"
                         value={formData.sl}
                         onChange={handleInputChange}
-                        placeholder="Nhập số lượng"
+                        placeholder="Nhập số lượng tồn kho"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
                     </div>

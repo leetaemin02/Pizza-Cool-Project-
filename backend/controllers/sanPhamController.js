@@ -128,3 +128,30 @@ exports.getRelatedProducts = async (req, res) => {
     res.status(500).json({ message: "Lỗi server" });
   }
 };
+
+// Lấy tổng số lượng đã bán cho tất cả sản phẩm
+exports.layTongSoLuongDaBan = async (req, res) => {
+  try {
+    const DonHang = require("../model/DonHang");
+
+    // Lấy tất cả đơn hàng và tính tổng số lượng đã bán cho mỗi sản phẩm
+    const donHangs = await DonHang.find({ trangThaiDonHang: "Đã hoàn thành" });
+
+    const soLuongDaBan = {};
+
+    donHangs.forEach((donHang) => {
+      donHang.items.forEach((item) => {
+        const sanPhamId = item.sanPham.toString();
+        if (!soLuongDaBan[sanPhamId]) {
+          soLuongDaBan[sanPhamId] = 0;
+        }
+        soLuongDaBan[sanPhamId] += item.soLuong;
+      });
+    });
+
+    res.json(soLuongDaBan);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Lỗi server khi lấy dữ liệu bán hàng" });
+  }
+};

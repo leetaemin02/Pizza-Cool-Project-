@@ -8,8 +8,6 @@ const {
   getAllOrders,
   getOrderById,
   updateOrderStatus,
-  // from danhGiaController
-  // will import below if needed
 } = require("../controllers/adminController");
 const { admin, authenticate } = require("../middleware/auth");
 

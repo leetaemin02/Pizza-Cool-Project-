@@ -17,6 +17,9 @@ const DiscountManager = () => {
     ngayKetThuc: "",
     conHieuLuc: true,
     Mota: "",
+    dieuKienToiThieu: "",
+    soLuotSuDung: "",
+    chiTietDieuKien: "",
   });
 
   const fetchDiscounts = async () => {
@@ -60,6 +63,9 @@ const DiscountManager = () => {
       ngayKetThuc: "",
       conHieuLuc: true,
       Mota: "",
+      dieuKienToiThieu: "",
+      soLuotSuDung: "",
+      chiTietDieuKien: "",
     });
     setShowModal(true);
   };
@@ -76,6 +82,9 @@ const DiscountManager = () => {
         : "",
       conHieuLuc: discount.conHieuLuc !== false,
       Mota: discount.Mota || "",
+      dieuKienToiThieu: discount.dieuKienToiThieu || "",
+      soLuotSuDung: discount.soLuotSuDung || "",
+      chiTietDieuKien: discount.chiTietDieuKien || "",
     });
     setShowModal(true);
   };
@@ -196,6 +205,12 @@ const DiscountManager = () => {
                       Giá trị giảm
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                      Điều kiện tối thiểu
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                      Số lượt sử dụng
+                    </th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
                       Ngày bắt đầu
                     </th>
                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
@@ -225,6 +240,16 @@ const DiscountManager = () => {
                       </td>
                       <td className="px-6 py-4 text-sm font-semibold text-green-600">
                         -{discount.giaTriGiam.toLocaleString()}₫
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-700">
+                        {discount.dieuKienToiThieu
+                          ? `${discount.dieuKienToiThieu.toLocaleString()}₫`
+                          : "Không giới hạn"}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-700">
+                        {discount.soLuotSuDung === -1
+                          ? "Không giới hạn"
+                          : discount.soLuotSuDung}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-700">
                         {discount.ngayBatDau
@@ -344,6 +369,36 @@ const DiscountManager = () => {
                       />
                     </div>
 
+                    {/* Điều kiện tối thiểu */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Điều kiện tối thiểu (₫)
+                      </label>
+                      <input
+                        type="number"
+                        name="dieuKienToiThieu"
+                        value={formData.dieuKienToiThieu}
+                        onChange={handleInputChange}
+                        placeholder="Nhập số tiền tối thiểu (0 = không giới hạn)"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+
+                    {/* Số lượt sử dụng */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Số lượt sử dụng
+                      </label>
+                      <input
+                        type="number"
+                        name="soLuotSuDung"
+                        value={formData.soLuotSuDung}
+                        onChange={handleInputChange}
+                        placeholder="Nhập số lượt (-1 = không giới hạn)"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+
                     {/* Ngày bắt đầu */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -385,6 +440,21 @@ const DiscountManager = () => {
                         Còn hiệu lực
                       </label>
                     </div>
+                  </div>
+
+                  {/* Chi tiết điều kiện */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Chi tiết điều kiện sử dụng
+                    </label>
+                    <textarea
+                      name="chiTietDieuKien"
+                      value={formData.chiTietDieuKien}
+                      onChange={handleInputChange}
+                      placeholder="Nhập chi tiết điều kiện sử dụng (ví dụ: Áp dụng cho đơn hàng online, không áp dụng cùng chương trình khác...)"
+                      rows="3"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
                   </div>
 
                   {/* Mô tả */}

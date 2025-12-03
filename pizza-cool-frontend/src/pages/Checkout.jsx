@@ -198,7 +198,7 @@ const CheckoutPage = () => {
 
   // ------------------- RENDER -------------------
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 font-sans">
+    <div className="min-h-screen bg-gray-50 pt-28 pb-10 px-4 font-sans">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-8 uppercase tracking-wide">
           Thanh toán
@@ -208,7 +208,7 @@ const CheckoutPage = () => {
           {/* LEFT COLUMN: FORM & PAYMENT */}
           <div className="lg:col-span-7 space-y-6">
             {/* Shipping Info */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <div className="bg-white p-7 rounded-2xl shadow-sm border border-gray-100">
               <div className="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
                 <div className="bg-black p-2 rounded-full text-white">
                   <User size={20} />
@@ -264,14 +264,14 @@ const CheckoutPage = () => {
                   icon={<Truck size={24} />}
                   selected={paymentMethod === "COD"}
                   onSelect={() => setPaymentMethod("COD")}
-                  color="black"
+                  color="blue"
                 />
                 <PaymentOption
                   label="Ví điện tử VNPAY / Ngân hàng"
                   description="Quét mã QR hoặc thẻ ATM nội địa"
                   icon={
                     <img
-                      src="https://sandbox.vnpayment.vn/paymentv2/images/layout/logo.png"
+                      src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/ed/d7/99/edd7990b-3a38-48a1-156e-46225abf6657/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/400x400ia-75.webp"
                       alt="VNPAY"
                       className="h-8 w-auto object-contain"
                     />
@@ -333,7 +333,7 @@ const InputField = ({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
+          className={`w-full pl-12 pr-4 py-3.5 rounded-2xl border ${
             error
               ? "border-red-500 bg-red-50"
               : "border-gray-200 focus:border-black"
@@ -346,7 +346,7 @@ const InputField = ({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
+          className={`w-full pl-12 pr-4 py-3.5 rounded-2xl border ${
             error
               ? "border-red-500 bg-red-50"
               : "border-gray-200 focus:border-black"

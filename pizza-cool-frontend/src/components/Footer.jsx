@@ -49,26 +49,12 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/contact"
-                  className="hover:text-red-500 transition-colors"
-                >
-                  Liên hệ
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/careers"
-                  className="hover:text-red-500 transition-colors"
-                >
+                <Link to="/" className="hover:text-red-500 transition-colors">
                   Tuyển dụng
                 </Link>
               </li>
               <li>
-                <Link
-                  to="/blog"
-                  className="hover:text-red-500 transition-colors"
-                >
+                <Link to="/" className="hover:text-red-500 transition-colors">
                   Tin tức & Sự kiện
                 </Link>
               </li>
@@ -142,7 +128,7 @@ function Footer() {
               <img
                 src={logoImage}
                 alt="Logo"
-                className="h-12 w-auto object-contain lg:ml-auto filter brightness-100"
+                className="h-25 w-auto object-contain lg:ml-auto filter brightness-100"
               />
             </Link>
 
@@ -208,7 +194,9 @@ function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 gap-4">
           {/* Copyright */}
           <div className="flex flex-col md:flex-row gap-4 items-center">
-            <span className="font-bold text-gray-300 text-lg">Pizza Cool</span>
+            <span className="font-bold text-gray-300 text-lg">
+              Pizza Cool Nhóm 10
+            </span>
             <span>© {new Date().getFullYear()} All rights reserved.</span>
             <span className="hidden md:inline">|</span>
             <Link to="/privacy" className="hover:text-white">

@@ -6,6 +6,7 @@ const {
   capNhatSanPham,
   xoaSanPham,
   getRelatedProducts,
+  layTongSoLuongDaBan,
 } = require("../controllers/sanPhamController");
 
 const router = express.Router();
@@ -16,6 +17,8 @@ const router = express.Router();
 router.get("/", layTatCaSanPham);
 // GET /api/sanpham/related/:id
 router.get("/related/:id", getRelatedProducts);
+// GET /api/sanpham/sales/total - Lấy tổng số lượng đã bán
+router.get("/sales/total", layTongSoLuongDaBan);
 router.get("/:id", laySanPhamTheoId);
 router.post("/", themSanPham);
 router.put("/:id", capNhatSanPham);
