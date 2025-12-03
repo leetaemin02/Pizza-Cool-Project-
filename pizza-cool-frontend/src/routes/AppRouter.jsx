@@ -13,6 +13,8 @@ import OrderHistoryPage from "../pages/OrderHistoryPage";
 import OrderDetailPage from "../pages/OrderDetailPage";
 import About from "../pages/About";
 
+import ScrollToTop from "../components/ScrollToTop";
+
 import PrivateRoute from "../components/PrivateRoute";
 import AdminLayout from "../layouts/AdminLayout";
 import UserLayout from "../layouts/UserLayout";
@@ -26,6 +28,7 @@ import DiscountManager from "../pages/admin/DiscountManager";
 function AppRouter() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         {/* ================== USER LAYOUT ================== */}
         <Route element={<UserLayout />}>
